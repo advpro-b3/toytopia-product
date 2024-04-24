@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +37,8 @@ class ProductApiControllerTest {
         List<Product> products = new ArrayList<>();
         products.add(new Product.ProductBuilder("Hot Wheels 18 Camaro SS").build());
         when(productService.findAll()).thenReturn(products);
-        assertEquals(1, productApiController.getAllProducts().size());
+        assertNotNull(productApiController.getAllProducts().getBody());
+        assertEquals(1, productApiController.getAllProducts().getBody().size());
     }
 
     @Test
@@ -44,7 +46,8 @@ class ProductApiControllerTest {
         Product product = new Product.ProductBuilder("Hot Wheels 18 Camaro SS").build();
         product.setId("1234567890");
         when(productService.findById("1234567890")).thenReturn(product);
-        assertEquals(product, productApiController.getProductById("1234567890"));
+        assertNotNull(productApiController.getProductById("1234567890").getBody());
+        assertEquals(product, productApiController.getProductById("1234567890").getBody());
     }
 
     @Test
@@ -69,7 +72,8 @@ class ProductApiControllerTest {
         when(productService.create(any(Product.class))).thenReturn(mockedProduct);
 
         // Call the controller method
-        Product createdProduct = productApiController.createProduct(productAttributes);
+        ResponseEntity<Product> createdProductResponse = productApiController.createProduct(productAttributes);
+        Product createdProduct = createdProductResponse.getBody();
 
         // Verify that productService.create was called with the expected product
         verify(productService, times(1)).create(argThat(product ->
