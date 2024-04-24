@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ProductTest {
     Product product;
@@ -18,6 +19,18 @@ class ProductTest {
                 .setDiscount(10)
                 .setAvailability(Availability.READY.getValue())
                 .build();
+    }
+
+    @Test
+    void tesInvalidProduct() {
+        Product.ProductBuilder productBuilder = new Product.ProductBuilder("")
+                .setDescription("The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas. A casting designed by Brendon Vetuskey with an initial-release color of Crush Orange. The Sixth Generation Camaro Hot Wheels Anniversary Special Edition was created by a team of designers led by Tom Peters.")
+                .setPrice(25000)
+                .setStock(20)
+                .setDiscount(10)
+                .setAvailability(Availability.READY.getValue());
+        Product product1 = productBuilder.build();
+        assertFalse(product1.isValid());
     }
 
     @Test
