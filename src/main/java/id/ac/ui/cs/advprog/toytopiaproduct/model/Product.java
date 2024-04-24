@@ -1,11 +1,15 @@
 package id.ac.ui.cs.advprog.toytopiaproduct.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Entity
 public class Product {
+    @Id
     private String id;
     private String name;
     private String description;
@@ -23,8 +27,7 @@ public class Product {
         private int discount;
         private String availability;
 
-        public ProductBuilder(String id, String name) {
-            this.id = id;
+        public ProductBuilder(String name) {
             this.name = name;
         }
 
