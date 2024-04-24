@@ -11,7 +11,7 @@ class ProductTest {
 
     @BeforeEach
     void SetUp() {
-        Product.ProductBuilder productBuilder = new Product.ProductBuilder("1234567890", "Hot Wheels 18 Camaro SS");
+        Product.ProductBuilder productBuilder = new Product.ProductBuilder("Hot Wheels 18 Camaro SS");
         product = productBuilder.setDescription("The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas. A casting designed by Brendon Vetuskey with an initial-release color of Crush Orange. The Sixth Generation Camaro Hot Wheels Anniversary Special Edition was created by a team of designers led by Tom Peters.")
                 .setPrice(25000)
                 .setStock(20)
@@ -22,6 +22,7 @@ class ProductTest {
 
     @Test
     void testGetId() {
+        product.setId("1234567890");
         assertEquals("1234567890", this.product.getId());
     }
 
