@@ -31,14 +31,15 @@ class ProductApiControllerTest {
     @Test
     public void testGetAllProducts() {
         List<Product> products = new ArrayList<>();
-        products.add(new Product.ProductBuilder("1234567890", "Hot Wheels 18 Camaro SS").build());
+        products.add(new Product.ProductBuilder("Hot Wheels 18 Camaro SS").build());
         when(productService.findAll()).thenReturn(products);
         assertEquals(1, productApiController.getAllProducts().size());
     }
 
     @Test
     public void testGetProductById() {
-        Product product = new Product.ProductBuilder("1234567890", "Hot Wheels 18 Camaro SS").build();
+        Product product = new Product.ProductBuilder("Hot Wheels 18 Camaro SS").build();
+        product.setId("1234567890");
         when(productService.findById("1234567890")).thenReturn(product);
         assertEquals(product, productApiController.getProductById("1234567890"));
     }
