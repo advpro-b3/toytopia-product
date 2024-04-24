@@ -44,32 +44,44 @@ class ProductServiceImplTest {
     @Test
     void create() {
         Product product = products.getFirst();
-        when(productRepository.create(any(Product.class))).thenReturn(product);
+        when(productRepository.save(any(Product.class))).thenReturn(product);
         assertEquals(product, productService.create(product));
     }
 
     @Test
     void findById() {
         Product product = products.getFirst();
-        when(productRepository.findById(product.getId())).thenReturn(product);
+        when(productRepository.findProductById(product.getId())).thenReturn(product);
         assertEquals(product, productService.findById(product.getId()));
     }
 
     @Test
     void findAll() {
-        when(productRepository.findAll()).thenReturn(products.iterator());
+        when(productRepository.findAll()).thenReturn(products);
         assertEquals(products.size(), productService.findAll().size());
     }
 
     @Test
     void update() {
         Product product = products.getFirst();
+
         Product updatedProduct = new Product();
         updatedProduct.setName("Hot Wheels Becak SS");
         updatedProduct.setDescription("Becak");
-        when(productRepository.update(product.getId(), updatedProduct)).thenReturn(updatedProduct);
 
-        productService.update(product.getId(), updatedProduct);
-        verify(productRepository, times(1)).update(product.getId(), updatedProduct);
+        when(productRepository.findProductById(product.getId())).thenReturn(product);
+        when(productRepository.save(product)).thenReturn(product);
+
+        assertEquals(product, productService.update(product.getId(), updatedProduct));
+
+        assertEquals(updatedProduct.getName(), product.getName());
+        assertEquals(updatedProduct.getDescription(), product.getDescription());
+    }
+
+    @Test
+    void deleteById() {
+        Product product = products.getFirst();
+        productService.deleteById(product.getId());
+        verify(productRepository, times(1)).deleteById(product.getId());
     }
 }
