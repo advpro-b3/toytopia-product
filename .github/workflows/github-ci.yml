@@ -1,0 +1,36 @@
+name: Continuous Integrations (CI)
+
+on:
+  push:
+    branches:
+      - dev
+      - build
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the git repository
+        uses: actions/checkout@v3
+      - name: Set up Java toolchain
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+      - name: Set Gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: Run unit test
+        run: ./gradlew test
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
