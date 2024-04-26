@@ -18,11 +18,7 @@ public class ProductApiController {
     @GetMapping("/all-products")
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productService.findAll();
-        if (products.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(products);
-        }
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/product/{productId}")
