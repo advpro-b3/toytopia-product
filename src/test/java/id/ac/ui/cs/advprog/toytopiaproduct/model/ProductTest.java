@@ -4,8 +4,7 @@ import id.ac.ui.cs.advprog.toytopiaproduct.enums.Availability;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ProductTest {
     Product product;
@@ -13,7 +12,7 @@ class ProductTest {
     @BeforeEach
     void SetUp() {
         Product.ProductBuilder productBuilder = new Product.ProductBuilder("Hot Wheels 18 Camaro SS");
-        product = productBuilder.setDescription("The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas. A casting designed by Brendon Vetuskey with an initial-release color of Crush Orange. The Sixth Generation Camaro Hot Wheels Anniversary Special Edition was created by a team of designers led by Tom Peters.")
+        product = productBuilder.setDescription("The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas. A casting designed by Brendon Vetuskey with an initial-release color of Crush Orange.")
                 .setPrice(25000)
                 .setStock(20)
                 .setDiscount(10)
@@ -23,31 +22,51 @@ class ProductTest {
 
     @Test
     void tesInvalidProduct() {
-        Product.ProductBuilder productBuilder = new Product.ProductBuilder("")
-                .setDescription("")
-                .setPrice(-1)
-                .setStock(-1)
-                .setDiscount(120)
-                .setAvailability("");
+        assertTrue(product.isValid());
         // test name
-        Product product1 = productBuilder.build();
-        assertFalse(product1.isValid());
+        product.setName(null);
+        assertFalse(product.isValid());
+        product.setName("");
+        assertFalse(product.isValid());
+        product.setName("Hot Wheels 18 Camaro SS and longer name is invalid so that you cant make it so lengthy especially more than 255 characters is not allowed Hot Wheels 18 Camaro SS and longer name is invalid so that you cant make it so lengthy especially more than 255 characters is not allowed Hot Wheels 18 Camaro SS and longer name is invalid so that you cant make it so lengthy especially more than 255 characters is not allowed");
+        assertFalse(product.isValid());
+        product.setName("Hot Wheels 18 Camaro SS");
+        assertTrue(product.isValid());
         // test description
-        product1.setName("Hot Wheels 18 Camaro SS");
-        assertFalse(product1.isValid());
+        product.setDescription(null);
+        assertFalse(product.isValid());
+        product.setDescription("");
+        assertFalse(product.isValid());
+        product.setDescription("The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas. The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas.The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas.The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas.The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas. The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas.");
+        assertFalse(product.isValid());
+        product.setDescription("The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas.");
+        assertTrue(product.isValid());
         // test price
-        product1.setDescription("The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas.");
-        assertFalse(product1.isValid());
+        product.setPrice(0);
+        assertFalse(product.isValid());
+        product.setPrice(1);
+        assertTrue(product.isValid());
         // test stock
-        product1.setPrice(25000);
-        assertFalse(product1.isValid());
+        product.setStock(-1);
+        assertFalse(product.isValid());
+        product.setStock(1);
+        assertTrue(product.isValid());
         // test discount
-        product1.setStock(20);
-        assertFalse(product1.isValid());
+        product.setDiscount(-1);
+        assertFalse(product.isValid());
+        product.setDiscount(101);
+        assertFalse(product.isValid());
+        product.setDiscount(100);
+        assertTrue(product.isValid());
+        product.setDiscount(0);
+        assertTrue(product.isValid());
         // test availability
-        product1.setDiscount(10);
-        assertFalse(product1.isValid());
-
+        product.setAvailability(null);
+        assertFalse(product.isValid());
+        product.setAvailability("");
+        assertFalse(product.isValid());
+        product.setAvailability(Availability.READY.getValue());
+        assertTrue(product.isValid());
     }
 
     @Test
@@ -63,7 +82,7 @@ class ProductTest {
 
     @Test
     void testGetDescription() {
-        assertEquals("The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas. A casting designed by Brendon Vetuskey with an initial-release color of Crush Orange. The Sixth Generation Camaro Hot Wheels Anniversary Special Edition was created by a team of designers led by Tom Peters.", this.product.getDescription());
+        assertEquals("The  '18 Camaro SS is based on Hot Wheels' 50th Anniversary SEMA 2017 auto show in Las Vegas. A casting designed by Brendon Vetuskey with an initial-release color of Crush Orange.", this.product.getDescription());
     }
 
     @Test
