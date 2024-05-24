@@ -5,6 +5,8 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Entity
@@ -58,7 +60,10 @@ public class Product {
 
         public Product build() {
             Product product = new Product();
-            product.setId(this.id);
+            if (product.getId() == null) {
+                UUID uuid = UUID.randomUUID();
+                product.setId(uuid.toString());
+            }
             product.setName(this.name);
             product.setDescription(this.description);
             product.setPrice(this.price);
@@ -67,5 +72,27 @@ public class Product {
             product.setAvailability(this.availability);
             return product;
         }
+    }
+
+    public boolean isValid() {
+        if (this.name == null || this.name.isEmpty() || this.name.length() > 255) {
+            return false;
+        }
+        if (this.description == null || this.description.isEmpty() || this.description.length() > 255){
+            return false;
+        }
+        if (this.price <= 0) {
+            return false;
+        }
+        if (this.stock < 0) {
+            return false;
+        }
+        if (this.discount < 0 || this.discount > 100) {
+            return false;
+        }
+        if (this.availability == null || this.availability.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 }
