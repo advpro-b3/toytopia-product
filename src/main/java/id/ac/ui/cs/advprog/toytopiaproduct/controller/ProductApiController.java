@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/product-service")
@@ -17,13 +18,15 @@ public class ProductApiController {
 
     @GetMapping("/all-products")
     public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.findAll();
-        return ResponseEntity.ok(products);
+        CompletableFuture<List<Product>> products = productService.findAll();
+        List<Product> productList = products.join();
+        return ResponseEntity.ok(productList);
     }
 
     @GetMapping("/product/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable String productId) {
-        Product product = productService.findById(productId);
+        CompletableFuture<Product> productAsync = productService.findById(productId);
+        Product product = productAsync.join();
         if (product == null) {
             return ResponseEntity.notFound().build();
         } else {
@@ -41,7 +44,9 @@ public class ProductApiController {
                 .setAvailability(productAttributes.get("availability"))
                 .build();
         if (product.isValid()){
-            return ResponseEntity.ok(productService.create(product));
+            CompletableFuture<Product> createdProductAsync = productService.create(product);
+            Product createdProduct = createdProductAsync.join();
+            return ResponseEntity.ok(createdProduct);
         } else {
             return ResponseEntity.badRequest().build();
         }
@@ -59,13 +64,16 @@ public class ProductApiController {
         if (!product.isValid()) {
             return ResponseEntity.badRequest().build();
         } else {
-            return ResponseEntity.ok(productService.update(productId, product));
+            CompletableFuture<Product> updatedProductAsync = productService.update(productId, product);
+            Product updatedProduct = updatedProductAsync.join();
+            return ResponseEntity.ok(updatedProduct);
         }
     }
 
     @DeleteMapping("/delete-product/{productId}")
     public ResponseEntity<Product> deleteProduct(@PathVariable String productId) {
-        Product product = productService.findById(productId);
+        CompletableFuture<Product> productAsync = productService.findById(productId);
+        Product product = productAsync.join();
         if (product == null) {
             return ResponseEntity.notFound().build();
         } else {
