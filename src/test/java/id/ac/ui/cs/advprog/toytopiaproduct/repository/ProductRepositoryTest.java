@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.concurrent.CompletableFuture;
+
 @ExtendWith(MockitoExtension.class)
 class ProductRepositoryTest {
     @Mock
@@ -36,7 +38,8 @@ class ProductRepositoryTest {
                 .setAvailability(Availability.READY.getValue());
         Product product = productBuilder.build();
         when(productRepository.findProductById(product.getId())).thenReturn(product);
-        Product foundProduct = productService.findById(product.getId());
+        CompletableFuture<Product> foundProductAsync = productService.findById(product.getId());
+        Product foundProduct = foundProductAsync.join();
 
         verify(productRepository).findProductById(product.getId());
 
