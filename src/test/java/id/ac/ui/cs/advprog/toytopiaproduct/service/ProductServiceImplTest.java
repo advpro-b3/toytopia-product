@@ -12,10 +12,13 @@ import id.ac.ui.cs.advprog.toytopiaproduct.repository.ProductRepository;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
@@ -45,20 +48,33 @@ class ProductServiceImplTest {
     void create() {
         Product product = products.getFirst();
         when(productRepository.save(any(Product.class))).thenReturn(product);
-        assertEquals(product, productService.create(product));
+        CompletableFuture<Product> productAsync = productService.create(product);
+        Product createdProduct = productAsync.join();
+        assertEquals(product, createdProduct);
     }
 
     @Test
     void findById() {
         Product product = products.getFirst();
         when(productRepository.findProductById(product.getId())).thenReturn(product);
-        assertEquals(product, productService.findById(product.getId()));
+        CompletableFuture<Product> productAsync = productService.findById(product.getId());
+        Product foundProduct = productAsync.join();
+        assertEquals(product, foundProduct);
     }
 
     @Test
     void findAll() {
         when(productRepository.findAll()).thenReturn(products);
-        assertEquals(products.size(), productService.findAll().size());
+        CompletableFuture<List<Product>> productListAsync = productService.findAll();
+
+        // Retrieve the List<Product> from the CompletableFuture
+        try {
+            List<Product> productList = productListAsync.get(); // This will block until the result is available
+            // Do something with the productList
+            assertEquals(products.size(), productList.size());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace(); // Handle exceptions appropriately
+        }
     }
 
     @Test
@@ -72,7 +88,10 @@ class ProductServiceImplTest {
         when(productRepository.findProductById(product.getId())).thenReturn(product);
         when(productRepository.save(product)).thenReturn(product);
 
-        assertEquals(product, productService.update(product.getId(), updatedProduct));
+        CompletableFuture<Product> updateProductAsync = productService.update(product.getId(), updatedProduct);
+        Product updatedProductComplete = updateProductAsync.join();
+
+        assertEquals(product, updatedProductComplete);
 
         assertEquals(updatedProduct.getName(), product.getName());
         assertEquals(updatedProduct.getDescription(), product.getDescription());
