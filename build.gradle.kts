@@ -1,7 +1,7 @@
 plugins {
     java
     jacoco
-    id("org.sonarqube") version "3.5.0.2730"
+    id("org.sonarqube") version "4.4.1.3373"
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
 }
@@ -33,12 +33,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.cloud:spring-cloud-gcp-starter-sql-postgresql:1.2.8.RELEASE")
+    implementation("org.postgresql:postgresql")
     implementation("com.google.guava:guava:32.0.0-android")
     implementation("com.google.oauth-client:google-oauth-client:1.33.3")
     implementation("com.google.protobuf:protobuf-java:3.21.7")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -91,4 +91,12 @@ tasks.jacocoTestReport {
 
 jacoco {
     toolVersion = "latest.release"
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "advpro-b3_toytopia-product")
+        property("sonar.organization", "advpro-b3")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
