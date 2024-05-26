@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,8 +36,11 @@ class ProductApiControllerTest {
 
     @Test
     public void testGetAllProducts() {
-        List<Product> products = new ArrayList<>();
-        products.add(new Product.ProductBuilder("Hot Wheels 18 Camaro SS").build());
+        CompletableFuture<List<Product>> products = new CompletableFuture<>();
+        Product product = new Product.ProductBuilder("Hot Wheels 18 Camaro SS").build();
+        List<Product> productList = new ArrayList<>();
+        productList.add(product);
+        products.complete(productList);
         when(productService.findAll()).thenReturn(products);
         assertNotNull(productApiController.getAllProducts().getBody());
         assertEquals(1, productApiController.getAllProducts().getBody().size());
@@ -44,16 +48,18 @@ class ProductApiControllerTest {
 
     @Test
     public void testGetProductById() {
+        CompletableFuture<Product> productAsync = new CompletableFuture<>();
         Product product = new Product.ProductBuilder("Hot Wheels 18 Camaro SS").build();
         product.setId("1234567890");
-        when(productService.findById("1234567890")).thenReturn(product);
+        productAsync.complete(product);
+        when(productService.findById("1234567890")).thenReturn(productAsync);
         assertNotNull(productApiController.getProductById("1234567890").getBody());
         assertEquals(product, productApiController.getProductById("1234567890").getBody());
     }
 
     @Test
     public void testGetProductByIdNotFound() {
-        when(productService.findById("1234567890")).thenReturn(null);
+        when(productService.findById("1234567890")).thenReturn(CompletableFuture.completedFuture(null));
         assertEquals(HttpStatusCode.valueOf(404), productApiController.getProductById("1234567890").getStatusCode());
     }
 
@@ -69,6 +75,7 @@ class ProductApiControllerTest {
         productAttributes.put("availability", "In stock");
 
         // Mock the behavior of productService.create to return a mocked product
+        CompletableFuture<Product> mockedProductFuture = new CompletableFuture<>();
         Product mockedProduct = new Product.ProductBuilder("Test Product")
                 .setDescription("Test Description")
                 .setPrice(100)
@@ -76,7 +83,8 @@ class ProductApiControllerTest {
                 .setDiscount(0)
                 .setAvailability("In stock")
                 .build();
-        when(productService.create(any(Product.class))).thenReturn(mockedProduct);
+        mockedProductFuture.complete(mockedProduct);
+        when(productService.create(any(Product.class))).thenReturn(mockedProductFuture);
 
         // Call the controller method
         ResponseEntity<Product> createdProductResponse = productApiController.createProduct(productAttributes);
@@ -131,6 +139,7 @@ class ProductApiControllerTest {
         productAttributes.put("availability", "In stock");
 
         // Mock the behavior of productService.update to return a mocked product
+        CompletableFuture<Product> mockedProductFuture = new CompletableFuture<>();
         Product mockedProduct = new Product.ProductBuilder("Test Product")
                 .setDescription("Test Description")
                 .setPrice(100)
@@ -138,7 +147,8 @@ class ProductApiControllerTest {
                 .setDiscount(0)
                 .setAvailability("In stock")
                 .build();
-        when(productService.update(eq("1234567890"), any(Product.class))).thenReturn(mockedProduct);
+        mockedProductFuture.complete(mockedProduct);
+        when(productService.update(eq("1234567890"), any(Product.class))).thenReturn(mockedProductFuture);
 
         // Call the controller method
         ResponseEntity<Product> updatedProductResponse = productApiController.updateProduct("1234567890", productAttributes);
@@ -183,15 +193,17 @@ class ProductApiControllerTest {
 
     @Test
     public void testDeleteProduct() {
+        CompletableFuture<Product> productAsync = new CompletableFuture<>();
         Product product = new Product.ProductBuilder("Hot Wheels 18 Camaro SS").build();
         product.setId("1234567890");
-        when(productService.findById("1234567890")).thenReturn(product);
+        productAsync.complete(product);
+        when(productService.findById("1234567890")).thenReturn(productAsync);
         assertEquals(HttpStatusCode.valueOf(200), productApiController.deleteProduct("1234567890").getStatusCode());
     }
 
     @Test
     public void testDeleteProductNotFound() {
-        when(productService.findById("1234567890")).thenReturn(null);
+        when(productService.findById("1234567890")).thenReturn(CompletableFuture.completedFuture(null));
         assertEquals(HttpStatusCode.valueOf(404), productApiController.deleteProduct("1234567890").getStatusCode());
     }
 }
